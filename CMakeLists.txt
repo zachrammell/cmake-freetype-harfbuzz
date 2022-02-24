@@ -29,7 +29,7 @@ list(APPEND freetype_byproduct
 
 ExternalProject_Add(
   freetype_without_harfbuzz
-  URL https://download.savannah.gnu.org/releases/freetype/freetype-2.9.tar.gz
+  URL https://download.savannah.gnu.org/releases/freetype/freetype-2.11.1.tar.gz
   CMAKE_ARGS
   -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -37,6 +37,7 @@ ExternalProject_Add(
   -DWITH_BZip2=Off
   -DWITH_ZLIB=Off
   -DWITH_PNG=Off
+  -DFT_DISABLE_HARFBUZZ=TRUE
   BUILD_BYPRODUCTS ${freetype_byproduct}
   )
 
@@ -55,8 +56,7 @@ if (WIN32)
   ExternalProject_Add(
     harfbuzz
     DEPENDS freetype_without_harfbuzz
-    URL https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-2.6.4.tar.xz
-    URL http://test.arch2080.rox.lu/harfbuzz-2.6.4.tar.xz
+    URL https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-2.6.7.tar.xz
     CMAKE_ARGS
     -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
     -DCMAKE_PREFIX_PATH=${freetype_without_harfbuzz_dir}
@@ -69,7 +69,7 @@ else()
   ExternalProject_Add(
     harfbuzz
     DEPENDS freetype_without_harfbuzz
-    URL https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-2.6.4.tar.xz
+    URL https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-2.6.7.tar.xz
     CONFIGURE_COMMAND FREETYPE_CFLAGS="-I${freetype_without_harfbuzz_dir}/include/freetype2/" FREETYPE_LIBS="${freetype_without_harfbuzz_dir}/lib/${freetype_lib_name}" <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> --enable-static=yes --enable-shared=no
     )
 
@@ -84,8 +84,7 @@ set(harfbuzz_dir ${install_dir})
 ExternalProject_Add(
   freetype_with_harfbuzz
   DEPENDS harfbuzz
-  URL https://download.savannah.gnu.org/releases/freetype/freetype-2.9.tar.gz
-  PATCH_COMMAND git apply --ignore-space-change --ignore-whitespace "${CMAKE_CURRENT_LIST_DIR}/freetype-harfbuzz-windows-fix.patch"
+  URL https://download.savannah.gnu.org/releases/freetype/freetype-2.11.1.tar.gz
   CMAKE_ARGS
   -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
   -DCMAKE_PREFIX_PATH=${harfbuzz_dir}
@@ -94,6 +93,7 @@ ExternalProject_Add(
   -DWITH_BZip2=Off
   -DWITH_ZLIB=Off
   -DWITH_PNG=Off
+  -DFT_REQUIRE_HARFBUZZ=TRUE
   BUILD_BYPRODUCTS ${freetype_byproduct}
   )
 
@@ -106,8 +106,3 @@ add_dependencies(test ${deps})
 install(TARGETS test DESTINATION bin)
 
 # -------------------------------------------------------
-
-
-
-
-
